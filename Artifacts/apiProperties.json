@@ -1,0 +1,51 @@
+{
+  "properties": {
+    "connectionParameters": {
+      "host": {
+        "type": "string",
+        "uiDefinition": {
+          "constraints": {
+            "required": "true"
+          },
+          "description": "Indico instance URL",
+          "displayName": "Indico host url",
+          "tooltip": "Indico host url"
+        }
+      },
+      "api_key": {
+        "type": "securestring",
+        "uiDefinition": {
+          "displayName": "API Key",
+          "description": "The API Key for this api",
+          "tooltip": "Provide your API Key",
+          "constraints": {
+            "tabIndex": 2,
+            "clearText": false,
+            "required": "true"
+          }
+        }
+      }
+    },
+    "iconBrandColor": "#007ee5",
+    "capabilities": [],
+    "policyTemplateInstances": [
+      {
+        "templateId": "dynamichosturl",
+        "title": "Set Host URL",
+        "parameters": {
+          "x-ms-apimTemplateParameter.urlTemplate": "@connectionParameters('host')",
+          "x-ms-apimTemplate-operationName": [
+            "DataSets_Get",
+            "Reviews_Post",
+            "Submissions_Get",
+            "Submissions_Post",
+            "Submissions_PostUrls",
+            "Submissions_Results",
+            "Workflows_Get"
+          ]
+        }
+      }
+    ],
+    "publisher": "Indico"
+  }
+}

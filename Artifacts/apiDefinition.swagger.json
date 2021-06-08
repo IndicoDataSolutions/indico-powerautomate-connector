@@ -1,0 +1,446 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Indico",
+    "description": "API Connector for integrating with Indico IPA application",
+    "contact": {
+      "name": "Indico Support",
+      "url": "https://indico.io",
+      "email": "getsupport@indico.io"
+    },
+    "version": "v1"
+  },
+  "host": "app.indico.io",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/DataSets": {
+      "get": {
+        "tags": [
+          "DataSets"
+        ],
+        "summary": "List datasets",
+        "description": "Retrieves all datasets available to the authenticated user",
+        "operationId": "DataSets_Get",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/IDataSet"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Submissions/{submissionId}/review": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Submit review",
+        "description": "Submits review to the selected submission",
+        "operationId": "Reviews_Post",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submissionId",
+            "description": "Id of the submission to submit review for",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "x-ms-summary": "Submission id",
+            "x-ms-url-encoding": "single"
+          },
+          {
+            "in": "query",
+            "name": "rejected",
+            "description": "Rejects the predictions and place the submission in the review queue. Must be True if {changes} not provided.",
+            "required": true,
+            "type": "boolean",
+            "x-ms-summary": "Rejected"
+          },
+          {
+            "in": "query",
+            "name": "changes",
+            "description": "JSON changes to make to raw predictions. Must be provided if {rejected} is set to False.",
+            "type": "string",
+            "x-ms-summary": "Changes"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "202": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Submissions": {
+      "post": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Workflow submission",
+        "description": "Sends files to the given workflow for processing",
+        "operationId": "Submissions_Post",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workflowId",
+            "description": "Id of the workflow to submit the file to",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "x-ms-summary": "Workflow id"
+          },
+          {
+            "in": "formData",
+            "name": "document",
+            "description": "File",
+            "required": true,
+            "type": "file",
+            "x-ms-summary": "File"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "List submissions",
+        "description": "Lists all submissions available to the authenticated user by most recent",
+        "operationId": "Submissions_Get",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "submissionIds",
+            "description": "Submission ids to filter by",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "x-ms-summary": "Submission ids"
+          },
+          {
+            "in": "query",
+            "name": "workflowIds",
+            "description": "Workflow ids to filter by",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "x-ms-summary": "Workflow ids"
+          },
+          {
+            "in": "query",
+            "name": "inputFilename",
+            "description": "Filename to filter by",
+            "type": "string",
+            "x-ms-summary": "Input filename"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "description": "Submission status to filter by",
+            "type": "string",
+            "enum": [
+              "PROCESSING",
+              "FAILED",
+              "COMPLETE",
+              "PENDING_ADMIN_REVIEW",
+              "PENDING_REVIEW",
+              "PENDING_AUTO_REVIEW"
+            ],
+            "x-ms-summary": "Submission status"
+          },
+          {
+            "in": "query",
+            "name": "retrieved",
+            "description": "Is submission retrieved",
+            "type": "boolean",
+            "x-ms-summary": "Retrieved"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Maximum number of submissions to return",
+            "type": "integer",
+            "format": "int32",
+            "default": 1000,
+            "x-ms-summary": "Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ISubmission"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Submissions/urls": {
+      "post": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Workflow submission urls",
+        "description": "Sends files from urls to the given workflow for processing",
+        "operationId": "Submissions_PostUrls",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workflowId",
+            "description": "Id of the workflow to submit the files to",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "x-ms-summary": "Workflow id"
+          },
+          {
+            "in": "query",
+            "name": "urls",
+            "description": "List of urls to submit to the workflow",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-ms-summary": "URLs"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Submissions/{submissionId}/results": {
+      "get": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Submission result",
+        "description": "Retrieves result of the given submission",
+        "operationId": "Submissions_Results",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submissionId",
+            "description": "Id of the submission to get the results for",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "x-ms-summary": "Submission id",
+            "x-ms-url-encoding": "single"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "202": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Workflows": {
+      "get": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "List workflows",
+        "description": "Retrieves all workflows available to the authenticated user",
+        "operationId": "Workflows_Get",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dataSetIds",
+            "description": "Ids of the datasets to get the workflows from",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "x-ms-summary": "Dataset ids"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/IWorkflow"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "IDataSet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "ISubmission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        },
+        "status": {
+          "enum": [
+            "PROCESSING",
+            "FAILED",
+            "COMPLETE",
+            "PENDING_ADMIN_REVIEW",
+            "PENDING_REVIEW",
+            "PENDING_AUTO_REVIEW"
+          ],
+          "type": "string",
+          "readOnly": true
+        },
+        "datasetId": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        },
+        "workflowId": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        },
+        "inputFile": {
+          "type": "string",
+          "readOnly": true
+        },
+        "inputFilename": {
+          "type": "string",
+          "readOnly": true
+        },
+        "resultFile": {
+          "type": "string",
+          "readOnly": true
+        },
+        "retrieved": {
+          "type": "boolean",
+          "readOnly": true
+        },
+        "errors": {
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "IWorkflow": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        },
+        "reviewEnabled": {
+          "type": "boolean",
+          "readOnly": true
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "APP Token": {
+      "type": "apiKey",
+      "name": "X-AppToken",
+      "in": "header",
+      "description": "App Token Authentication, for more info go to: https://app.indico.io/auth/account"
+    }
+  },
+  "x-ms-connector-metadata": [
+    {
+      "propertyName": "Website",
+      "propertyValue": "https://indico.io"
+    },
+    {
+      "propertyName": "Privacy policy",
+      "propertyValue": "https://indico.io/terms#privacy"
+    },
+    {
+      "propertyName": "Categories",
+      "propertyValue": "AI;Content and Files"
+    }
+  ]
+}
